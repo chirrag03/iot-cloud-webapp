@@ -15,3 +15,5 @@ class MqttClient:
     def on_message(self, client, userdata, msg):
         message = msg.payload.decode('utf-8')
         sse.send_event("message", message)
+
+
