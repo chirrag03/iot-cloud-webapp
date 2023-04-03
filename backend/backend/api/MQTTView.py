@@ -1,5 +1,3 @@
-import json
-
 from django.http import HttpResponse
 from django.http import JsonResponse
 import logging
@@ -7,6 +5,8 @@ import paho.mqtt.client as mqtt
 import threading
 from django_sse.redisqueue import send_event
 import json
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 

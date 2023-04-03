@@ -121,3 +121,25 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Redis settings
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
+
+# SSE settings
+SSE_REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+SSE_REDIS_EXPIRE = 60*60*24*7  # 1 week
+
+# SSE settings
+SSE_REDIS_CONNECTION_SETTINGS = {
+    'location': 'redis://localhost:6379/0',
+    'max_connections': 5,
+    'connection_class': 'redis.connection.DefaultParser',
+}
+
+
+# Specify the Redis connection settings for django_sse
+CONNECTION_KWARGS = {
+    'location': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}',
+}

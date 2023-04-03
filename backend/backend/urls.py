@@ -18,10 +18,12 @@ from django.urls import path
 from backend.api.views import some_view
 from backend.api.DoorStatusView import fetch_view
 from backend.api.MQTTView import start_mqtt_view
+from backend.api.MessageSseView import MessageSseView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', some_view),
     path('door_status/', fetch_view),
     path('start/', start_mqtt_view),
+    path('sse/message/', MessageSseView.as_view(), name='sse_message'),
 ]
