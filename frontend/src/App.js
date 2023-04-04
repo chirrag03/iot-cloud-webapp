@@ -5,6 +5,7 @@ import { Client } from 'paho-mqtt';
 function App() {
   const [doorStatus, setDoorStatus] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [Rstatus, setRStatus] = useState([]);
   const doorStatusRef = useRef(null);
   const messagesRef = useRef(null);
 
@@ -19,7 +20,8 @@ function App() {
       onSuccess: () => {
         console.log('connected to mqtt broker');
         client.subscribe('iot/g1/door/status');
-        client.subscribe('iot/g1/imu/data')
+        client.subscribe('iot/g1/imu/data');
+        client.subscribe('RaspberryPi/Status')
       },
       onFailure: (response) => {
         console.log('connection failed', response.errorMessage);
@@ -34,6 +36,9 @@ function App() {
       };
       if (message.destinationName === 'iot/g1/door/status') {
         setDoorStatus((prevState) => [...prevState, newStatus]);
+      }
+      if(message.destinationName === 'RaspberryPi/Status') {
+        setRStatus(message.payloadString)
       }
       else {
         setMessages((prevMessages) => [
@@ -66,12 +71,13 @@ function App() {
   return (
     <div className="App App-header">
       <h1>IOT Assignment 4</h1>
+      <h1>Raspberry Pi Status: {Rstatus}</h1>
       <div className="row">
         <div className="col-md-6">
           <h2><div>Decisions: </div></h2>
           <h5><div className="overflow-auto" style={{ width: "600px", maxHeight: "50vh", overflowY: "scroll" }} ref={doorStatusRef}>
             {doorStatus.map(({ status, timestamp }, index) => (
-              <h2 key={index}>({timestamp}) Door Status: {status || "Loading..."}</h2>
+              <p key={index}>({timestamp}) Door Status: {status || "Loading..."}</p>
             ))}
             </div>
             </h5>
@@ -86,7 +92,7 @@ function App() {
             </p>
           ))}
         </div>
-        </h5>
+        </h5> 
       </div>
     </div>
     </div >
