@@ -6,6 +6,8 @@ function App() {
   const [doorStatus, setDoorStatus] = useState([]);
   const [messages, setMessages] = useState([]);
   const [Rstatus, setRStatus] = useState([]);
+  const [finalDoorStatus, setFinalDoorStatus] = useState([]);
+
   const doorStatusRef = useRef(null);
   const messagesRef = useRef(null);
 
@@ -36,8 +38,9 @@ function App() {
       };
       if (message.destinationName === 'iot/g1/door/status') {
         setDoorStatus((prevState) => [...prevState, newStatus]);
+        setFinalDoorStatus(newStatus.status);
       }
-      if(message.destinationName === 'RaspberryPi/Status') {
+      else if (message.destinationName === 'RaspberryPi/Status') {
         setRStatus(message.payloadString)
       }
       else {
@@ -71,7 +74,11 @@ function App() {
   return (
     <div className="App App-header">
       <h1>IOT Assignment 4</h1>
-      <h1>Raspberry Pi Status: {Rstatus}</h1>
+      <h2 style={{ 
+    background: "repeating-linear-gradient(-45deg, #f5f5f5, #f5f5f5 10px, #ffffff 10px, #ffffff 20px)", 
+    display: "inline-block", color: "black",
+    padding: "5px"}}>Final decision sent to Laptop: {finalDoorStatus}</h2>
+      <h3>Raspberry Pi Status: {Rstatus}</h3>
       <div className="row">
         <div className="col-md-6">
           <h2><div>Decisions: </div></h2>
@@ -79,22 +86,23 @@ function App() {
             {doorStatus.map(({ status, timestamp }, index) => (
               <p key={index}>({timestamp}) Door Status: {status || "Loading..."}</p>
             ))}
-            </div>
-            </h5>
+          </div>
+          </h5>
         </div>
-      
-      <div className="col-md-6">
-        <h2><div>Sensor Values: </div></h2>
-        <h5><div className="overflow-auto" style={{ width: "600px", maxHeight: "50vh", overflowY: "scroll" }} ref={messagesRef}>
-          {messages.map((msg, index) => (
-            <p key={index}>
-              {msg.message} ({msg.timestamp})
-            </p>
-          ))}
+
+        <div className="col-md-6">
+          <h2><div>IMU Sensor Values: </div></h2>
+          <h5><div className="overflow-auto" style={{ width: "600px", maxHeight: "50vh", overflowY: "scroll" }} ref={messagesRef}>
+            {messages.map((msg, index) => (
+              <p key={index}>
+                {msg.message} ({msg.timestamp})
+                <br/>=======================================
+              </p>
+            ))}
+          </div>
+          </h5>
         </div>
-        </h5> 
       </div>
-    </div>
     </div >
   );
 }
