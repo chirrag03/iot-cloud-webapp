@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { Client } from 'paho-mqtt';
 
 function App() {
   const [doorStatus, setDoorStatus] = useState([]);
   const [messages, setMessages] = useState([]);
+  const doorStatusRef = useRef(null);
+  const messagesRef = useRef(null);
 
   useEffect(() => {
     const client = new Client('broker.hivemq.com', 8000, 'clientId-12345');
@@ -33,7 +35,7 @@ function App() {
       if (message.destinationName === 'iot/g1/door/status') {
         setDoorStatus((prevState) => [...prevState, newStatus]);
       }
-      else{
+      else {
         setMessages((prevMessages) => [
           ...prevMessages,
           {
@@ -49,23 +51,45 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (doorStatusRef.current) {
+      doorStatusRef.current.scrollTop = doorStatusRef.current.scrollHeight;
+    }
+  }, [doorStatus]);
+
+  useEffect(() => {
+    if (messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <div className="App App-header">
-      <div className='row'>
+      <h1>IOT Assignment 4</h1>
+      <div className="row">
+        <div className="col-md-6">
+          <h2><div>Decisions: </div></h2>
+          <h5><div className="overflow-auto" style={{ width: "600px", maxHeight: "50vh", overflowY: "scroll" }} ref={doorStatusRef}>
+            {doorStatus.map(({ status, timestamp }, index) => (
+              <h2 key={index}>({timestamp}) Door Status: {status || "Loading..."}</h2>
+            ))}
+            </div>
+            </h5>
+        </div>
+      
       <div className="col-md-6">
-        {doorStatus.map(({ status, timestamp }, index) => (
-          <h2 key={index}>({timestamp}) Door Status: {status || 'Loading...'}</h2>
-        ))}
-      </div>
-      <div className="col-md-6">
-        {messages.map((msg, index) => (
-          <p key={index}>
-            Sensor Values: {msg.message} ({msg.timestamp})
-          </p>
-        ))}
-      </div>
+        <h2><div>Sensor Values: </div></h2>
+        <h5><div className="overflow-auto" style={{ width: "600px", maxHeight: "50vh", overflowY: "scroll" }} ref={messagesRef}>
+          {messages.map((msg, index) => (
+            <p key={index}>
+              {msg.message} ({msg.timestamp})
+            </p>
+          ))}
+        </div>
+        </h5>
       </div>
     </div>
+    </div >
   );
 }
 
